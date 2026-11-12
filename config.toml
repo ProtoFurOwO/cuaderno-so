@@ -1,0 +1,20 @@
+# Cambiar generation_model NO obliga a reconstruir el índice.
+# Cambiar embedding_model SÍ obliga: no se mezclan espacios vectoriales.
+[ollama]
+base_url = "http://127.0.0.1:11434"
+generation_model = "qwen2.5:1.5b"
+embedding_model = "embeddinggemma:latest"
+timeout_seconds = 240
+# 0 descarga de memoria el modelo al terminar cada petición. Más lento, menos RAM.
+keep_alive = "0"
+# Demostración reproducible sin tarjeta gráfica dedicada.
+force_cpu = true
+
+[rag]
+chunk_chars = 1000
+chunk_overlap = 160
+top_k = 4
+min_similarity = 0.40
+max_context_chars = 4200
+context_tokens = 4096
+max_answer_tokens = 384
