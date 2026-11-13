@@ -20,12 +20,14 @@ st.markdown("""
 .block-container {max-width: 1140px; padding-top: 2.5rem; padding-bottom: 4rem;}
 h1 {letter-spacing: -0.045em; font-weight: 750;}
 h2, h3 {letter-spacing: -0.025em;}
-[data-testid="stSidebar"] {border-right: 1px solid #d8e2f0;}
-[data-testid="stChatMessage"] {background: white; border: 1px solid #e1e8f1; border-radius: 12px;}
+[data-testid="stSidebar"] {border-right: 1px solid color-mix(in srgb, currentColor 18%, transparent);}
+/* Streamlit elige superficie y texto juntos según el tema activo.
+   Un fondo blanco fijo deja texto blanco invisible en el tema oscuro. */
+[data-testid="stChatMessage"] {border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 12px;}
 [data-testid="stChatMessage"] p {line-height: 1.7;}
 [data-testid="stMetricValue"] {font-size: 1.7rem;}
 .course-rule {height: 5px; background: #2457a7; width: 54px; margin-bottom: 18px;}
-.answer-copy {white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.7; max-width: 74ch;}
+.answer-copy {color: inherit; background: transparent; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.7; max-width: 74ch;}
 @media (max-width: 640px) {.block-container {padding-top: 1.4rem;} h1 {font-size: 2rem !important;}}
 </style>
 """, unsafe_allow_html=True)
@@ -92,8 +94,16 @@ def main():
         st.caption("Tu material, con referencias.")
         st.divider()
         selected = st.selectbox("Modelo que responde", options, help="Cambia sólo la generación; no modifica el índice. La selección dura esta sesión.")
-        settings = replace(base, generation_model=selected)
+        save_ram = st.checkbox(
+            "Ahorrar RAM entre preguntas", value=base.keep_alive == "0",
+            help="Libera cada modelo al terminar. Actívalo si falta RAM; recargar modelos vuelve más lentas las consultas. Con 16 GB puedes dejarlo desactivado.",
+        )
+        keep_alive = "0" if save_ram else (base.keep_alive if base.keep_alive != "0" else "5m")
+        settings = replace(base, generation_model=selected, keep_alive=keep_alive)
         st.caption(f"Búsqueda: {settings.embedding_model}")
+        retention = "liberar al terminar" if save_ram else f"conservar modelos: {keep_alive}"
+        device = "CPU" if settings.force_cpu else "Ollama automático"
+        st.caption(f"{device} | {settings.num_threads} hilos | {retention}")
         if connection_error:
             st.error(connection_error)
         else:

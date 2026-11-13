@@ -16,8 +16,9 @@ class Settings:
     generation_model: str = "qwen2.5:1.5b"
     embedding_model: str = "embeddinggemma:latest"
     timeout_seconds: int = 240
-    keep_alive: str = "0"
+    keep_alive: str = "5m"
     force_cpu: bool = True
+    num_threads: int = 4
     chunk_chars: int = 1000
     chunk_overlap: int = 160
     top_k: int = 4
@@ -48,6 +49,8 @@ class Settings:
             raise ValueError("min_similarity debe estar entre 0 y 1.")
         if min(self.timeout_seconds, self.context_tokens, self.max_answer_tokens) < 1:
             raise ValueError("Timeout y límites de tokens deben ser positivos.")
+        if type(self.num_threads) is not int or not 1 <= self.num_threads <= 32:
+            raise ValueError("num_threads debe ser un entero entre 1 y 32.")
         return self
 
 

@@ -40,3 +40,9 @@ def test_chat_sources_preview_and_model_switch(tmp_path, monkeypatch):
     previews[0].check().run(timeout=20)
     assert not app.exception
     assert read_manifest(settings)["collection"] == original["collection"]
+    saver = next(item for item in app.checkbox if item.label == "Ahorrar RAM entre preguntas")
+    assert saver.value is False
+    saver.check().run(timeout=20)
+    assert not app.exception
+    assert any("liberar al terminar" in item.value for item in app.caption)
+    assert read_manifest(settings)["collection"] == original["collection"]

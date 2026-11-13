@@ -10,7 +10,7 @@ def main():
     files = [ROOT / name for name in (
         "app.py", "manage.py", "empaquetar.py", "config.toml", "README.md",
         "requirements.txt", "requirements-lock.txt", "requirements-dev.txt",
-        "requirements-ocr.txt", "pytest.ini", "instalar.bat", "iniciar.bat", ".gitignore",
+        "requirements-ocr.txt", "requirements-browser.txt", "pytest.ini", "instalar.bat", "iniciar.bat", ".gitignore",
         ".streamlit/config.toml",
     )]
     for folder in ("asistente", "tests", "docs", "evaluation", "documents", "data/prepared"):

@@ -62,6 +62,7 @@ def test_config_overrides_and_environment(tmp_path, monkeypatch):
 @pytest.mark.parametrize("values", [
     {"chunk_chars": 100, "chunk_overlap": 100}, {"top_k": 0},
     {"min_similarity": 1.1}, {"base_url": "file:///test"}, {"generation_model": ""},
+    {"num_threads": 0}, {"num_threads": 33}, {"num_threads": True},
 ])
 def test_invalid_config(values):
     with pytest.raises(ValueError):
@@ -127,6 +128,7 @@ def test_upload_safe_and_no_overwrite(tmp_path):
 
 def test_generator_change_preserves_index_signature(settings):
     assert corpus_signature(settings) == corpus_signature(replace(settings, generation_model="otro-modelo"))
+    assert corpus_signature(settings) == corpus_signature(replace(settings, keep_alive="0", num_threads=2))
     assert corpus_signature(settings) != corpus_signature(replace(settings, embedding_model="otro-embedding"))
     assert corpus_signature(settings) != corpus_signature(replace(settings, chunk_chars=500))
 

@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import pytest
 
 from asistente.config import Settings
@@ -17,6 +19,21 @@ def test_embedding_payload_and_cpu(monkeypatch):
     assert calls[0][1]["keep_alive"] == "5m"
     assert calls[0][1]["options"]["num_gpu"] == 0
     assert calls[0][1]["truncate"] is False
+    assert calls[0][1]["options"]["num_thread"] == 4
+
+
+def test_generation_uses_configured_threads_and_retention(monkeypatch):
+    client = OllamaClient(replace(Settings(), num_threads=6, keep_alive="5m"))
+    calls = []
+
+    def request(endpoint, payload):
+        calls.append(payload)
+        return {"message": {"content": "respuesta"}}
+
+    monkeypatch.setattr(client, "_model_request", request)
+    assert client.generate("pregunta", "contexto") == "respuesta"
+    assert calls[0]["options"]["num_thread"] == 6
+    assert calls[0]["keep_alive"] == "5m"
 
 
 @pytest.mark.parametrize("endpoint_error", ["/tokenize", "/health"])

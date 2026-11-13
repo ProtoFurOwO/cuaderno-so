@@ -151,10 +151,15 @@ Predeterminados:
 - Embeddings: `embeddinggemma:latest`, 300M; descarga aproximada 622 MB.
 - Generador: `qwen2.5:1.5b`, Q4_K_M; descarga aproximada 986 MB.
 - `force_cpu = true`: usa CPU incluso si esta PC tiene GPU, para probar portabilidad.
-- Dos hilos por petición y contexto máximo de 4096 tokens.
-- `keep_alive = "0"`: descarga cada modelo de RAM al terminar la petición. Ahorra
-  memoria, pero volver a cargarlo aumenta latencia. En una PC con RAM suficiente,
-  puedes usar `"5m"` en `config.local.toml` para conservarlo.
+- `num_threads = 4`: cuatro hilos por petición, configurables en `config.local.toml`.
+  Contexto máximo de 4096 tokens.
+- `keep_alive = "5m"`: conserva los modelos cargados hasta cinco minutos entre
+  peticiones para evitar recargas. Es el perfil inicial para el i7-1365U con 16 GB
+  de RAM del equipo destino; no es un benchmark ni garantiza tiempos de respuesta.
+- Si falta RAM, activa **Ahorrar RAM entre preguntas** en la barra lateral:
+  libera cada modelo al terminar. Para conservar esa elección entre sesiones,
+  establece `keep_alive = "0"` en `config.local.toml`. Ahorra memoria, pero recargar
+  los modelos aumenta latencia. También puedes bajar `num_threads` a 2.
 - Durante la construcción del índice se conserva sólo el modelo de embeddings
   entre fragmentos y se libera al terminar si `keep_alive="0"`. Se procesa un
   fragmento por petición para reducir picos de RAM y evitar fallos de lotes en Windows.
@@ -171,6 +176,18 @@ Predeterminados:
 Evita contextos enormes y respuestas largas en laptops antiguas. Cierra juegos,
 otros modelos y pestañas innecesarias. Prueba en el equipo final antes de exponer:
 los tiempos de una PC distinta no predicen los de la ThinkPad.
+
+La laptop de destino tiene CPU i7-1365U, 16 GB de RAM y gráficos integrados:
+se mantiene Qwen 1.5B por CPU; no hace falta instalar el modelo 0.5B ni otro
+embedding. En la captura quedaban unos 12 GB de disco libre. **Conviene liberar
+espacio hasta tener al menos 20 GB disponibles**, para dejar margen a Windows,
+dependencias y cachés de instalación. No instales OCR ni paquetes de desarrollo
+en esa laptop si vas a reutilizar los PDF ya preparados.
+
+Las respuestas y fuentes usan los colores del tema activo de Streamlit, tanto
+claro como oscuro. Si actualizas desde una versión con texto invisible, cierra
+la terminal de la app con `Ctrl+C`, ejecuta `git pull --ff-only`, abre de nuevo
+`iniciar.bat` y recarga el navegador con `Ctrl+F5`. No hace falta reconstruir el índice.
 
 ## Material y OCR
 
@@ -207,6 +224,19 @@ heurísticas, no una garantía de extracción perfecta.
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest -q
 ```
+
+Prueba visual de contraste opcional para desarrollo (requiere Chrome):
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-browser.txt
+$env:RUN_BROWSER_TESTS = "1"
+.\.venv\Scripts\python.exe -m pytest tests/test_browser.py -q
+Remove-Item Env:RUN_BROWSER_TESTS
+```
+
+Esta prueba usa respuestas falsas para aislar la interfaz, abre los temas claro
+y oscuro y exige contraste de al menos 4.5:1 en pregunta, respuesta y fuentes.
+No mide calidad del LLM ni necesita Ollama.
 
 `evaluation/questions.json` contiene 20 casos con páginas/respuestas de referencia,
 incluyendo preguntas sin respuesta y una instrucción para ignorar documentos.

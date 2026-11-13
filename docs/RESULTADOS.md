@@ -63,3 +63,25 @@ controlado ni una estimación para una laptop distinta.
 
 Una demostración defendible debe enseñar la evidencia y reconocer estos límites,
 no confundir una cita válida con una afirmación comprobada.
+
+## Corrección de contraste y perfil de laptop (13 de noviembre de 2026)
+
+Se eliminó el fondo blanco fijo de los mensajes, que podía combinarse con texto
+blanco al elegir tema oscuro. Los colores de las respuestas y fuentes ahora siguen
+el tema activo. Las pruebas de Chrome verifican contraste mínimo 4.5:1 en pregunta,
+respuesta y fuentes, en claro y oscuro. Un control negativo reproduce el fondo
+blanco anterior y comprueba que la misma medición detecta el contraste insuficiente.
+Estas pruebas visuales usan respuestas falsas: no evalúan el LLM.
+La comprobación actual pasó 45 pruebas automáticas y dos pruebas de navegador.
+La respuesta y el texto de las fuentes midieron aproximadamente 13.47:1 en claro
+y 18.11:1 en oscuro; ambas mediciones superan el mínimo 4.5:1 verificado.
+
+La captura del equipo destino muestra i7-1365U, 16 GB de RAM y gráficos integrados.
+Se mantiene Qwen 1.5B por CPU, con cuatro hilos configurables y modelos retenidos
+hasta cinco minutos para evitar recargas. Se añadió un interruptor para liberar
+RAM entre preguntas. Ningún ajuste cambia los vectores ni obliga a reindexar.
+No se midió el rendimiento en esa laptop: son ajustes iniciales, no tiempos garantizados.
+
+En la captura quedaban unos 12 GB de almacenamiento libre. Se recomienda liberar
+espacio y no instalar herramientas opcionales de OCR o desarrollo en el equipo
+destino si se reutiliza el texto ya preparado.

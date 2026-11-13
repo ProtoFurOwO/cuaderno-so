@@ -5,10 +5,13 @@ base_url = "http://127.0.0.1:11434"
 generation_model = "qwen2.5:1.5b"
 embedding_model = "embeddinggemma:latest"
 timeout_seconds = 240
-# 0 descarga de memoria el modelo al terminar cada petición. Más lento, menos RAM.
-keep_alive = "0"
+# Perfil para CPU con 16 GB: evita recargar modelos entre preguntas.
+# Con poca RAM, usa "0" o activa «Ahorrar RAM entre preguntas» en la app.
+keep_alive = "5m"
 # Demostración reproducible sin tarjeta gráfica dedicada.
 force_cpu = true
+# Punto de partida para i7-1365U; configurable, no benchmark del equipo destino.
+num_threads = 4
 
 [rag]
 chunk_chars = 1000

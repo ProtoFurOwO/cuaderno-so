@@ -80,7 +80,7 @@ class OllamaClient:
             "input": texts,
             "truncate": False,
             "keep_alive": self.settings.keep_alive if keep_alive is None else keep_alive,
-            "options": {"num_thread": 2, **({"num_gpu": 0} if self.settings.force_cpu else {})},
+            "options": {"num_thread": self.settings.num_threads, **({"num_gpu": 0} if self.settings.force_cpu else {})},
         }
         response = self._model_request("/api/embed", payload)
         vectors = response.get("embeddings", [])
@@ -131,7 +131,7 @@ class OllamaClient:
                 "seed": 42,
                 "num_ctx": self.settings.context_tokens,
                 "num_predict": self.settings.max_answer_tokens,
-                "num_thread": 2,
+                "num_thread": self.settings.num_threads,
                 **({"num_gpu": 0} if self.settings.force_cpu else {}),
             },
         })
